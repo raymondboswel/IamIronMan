@@ -11,3 +11,9 @@ GET     /message                    controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+GET     /iamironman                 controllers.IronManHomeController.index
+
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+GET     /webjars/*file              controllers.WebJarAssets.at(file)

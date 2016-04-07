@@ -1,4 +1,5 @@
 library(lubridate)
+library(jsonlite)
 
 getData <- function () {
   download.file(url="https://docs.google.com/spreadsheets/d/1qyhjFF4CcjeSu__88_WOLjFumuguDmVWTHbOlrikEvI/pub?gid=0&single=true&output=csv",
@@ -12,11 +13,15 @@ createDataFrames <- function() {
   cyclingdf <- rawdf[rawdf$Type == "Cycling", ]
   
   runningPace <- runningdf[, c("Pace")]
-  View(runningPace)
-  View(period_to_seconds(ms(runningPace)))
+  cyclingDistances <- cyclingdf[, c("Date","Distance")]
+  
+  #View(runningPace)
+  #View(period_to_seconds(ms(runningPace)))
   runningPaceTs <- ts(period_to_seconds(ms(runningPace)))
-  plot.ts(runningPaceTs)
+  #plot.ts(runningPaceTs)
+  toJSON(unname(cyclingDistances), Pretty=TRUE)
 }
 
 getData()
 createDataFrames()
+

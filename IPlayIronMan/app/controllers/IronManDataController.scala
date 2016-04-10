@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject._
 
+import models.{Workouts, Workout}
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -39,6 +40,13 @@ class IronManDataController @Inject() extends Controller {
     val url = "https://docs.google.com/spreadsheets/d/1qyhjFF4CcjeSu__88_WOLjFumuguDmVWTHbOlrikEvI/pub?gid=0&single=true&output=csv"
     val result = scala.io.Source.fromURL(url).mkString
     val iter = result.split("\n").drop(1)
+    println("Iterating over lines")
+    iter.foreach((line: String) => {
+      println(line);
+      val workout = Workout(0, 20)
+      Workouts.add(workout);
+
+    })
     val output = iter.mkString
 
 

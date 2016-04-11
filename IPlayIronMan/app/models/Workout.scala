@@ -1,9 +1,12 @@
 package models
 
+import java.sql.Date
+
 import play.api.Play
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 import slick.driver.MySQLDriver.api._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -13,13 +16,13 @@ import scala.concurrent.Future
 
 
 
-case class Workout (id: Long,distance:Double ){
+case class Workout (id: Long, date:Date,distance:Double ){
 
 }
 
 class WorkoutTableDef(tag:Tag) extends Table[Workout](tag, "workout") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-  //def date = column[Date]("date")
+  def date = column[Date]("date")
   def distance = column[Double]("distance")
   //def time = column[Date]("time")
   //def pace = column[Date]("pace")

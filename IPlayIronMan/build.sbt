@@ -15,7 +15,10 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick" % "2.0.0",
   "com.typesafe.play" %% "play-slick-evolutions" % "2.0.0",
   "mysql" % "mysql-connector-java" % "5.1.36",
-  "com.typesafe.slick" %% "slick" % "3.1.1"
+  "com.typesafe.slick" %% "slick" % "3.1.1",
+  "com.github.tototoshi" %% "slick-joda-mapper" % "2.1.0",
+  "joda-time" % "joda-time" % "2.7",
+  "org.joda" % "joda-convert" % "1.7"
 
 )
 

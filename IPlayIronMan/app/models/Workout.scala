@@ -1,7 +1,6 @@
 package models
-
-import java.sql.Date
-
+import com.github.tototoshi.slick.MySQLJodaSupport._
+import org.joda.time.DateTime
 import play.api.Play
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
@@ -10,24 +9,25 @@ import slick.driver.MySQLDriver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+
 /**
  * Created by Ray on 4/7/2016.
  */
 
 
 
-case class Workout (id: Long, date:Date,distance:Double ){
+case class Workout (id: Long, date:DateTime,distance:Double, time: Int, pace: Int, speed:Double, maxSpeed: Double ){
 
 }
 
 class WorkoutTableDef(tag:Tag) extends Table[Workout](tag, "workout") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-  def date = column[Date]("date")
+  def date = column[DateTime]("date")
   def distance = column[Double]("distance")
-  //def time = column[Date]("time")
-  //def pace = column[Date]("pace")
-  //def speed = column[Double]("speed")
-  //def maxSpeed = column[Double]("maxSpeed")
+  def time = column[Int]("time")
+  def pace = column[Int]("pace")
+  def speed = column[Double]("speed")
+  def maxSpeed = column[Double]("maxSpeed")
   //def workoutType = column[String]("type")
   //def timeOfDay = column[Date]("time_of_day")
   //def elevationGain = column[Int]("elevation_gain")
@@ -36,7 +36,7 @@ class WorkoutTableDef(tag:Tag) extends Table[Workout](tag, "workout") {
   //def averageHeartRate = column[Double]("average_heart_rate")
 
   override def * =
-    (id,distance) <> (Workout.tupled, Workout.unapply) /*pace, speed, maxSpeed, workoutType,
+    (id,date,distance, time, pace, speed, maxSpeed) <> (Workout.tupled, Workout.unapply) /*pace, speed, maxSpeed, workoutType,
       timeOfDay, elevationGain, elevationLoss, maxHeartRate, averageHeartRate*/
 }
 

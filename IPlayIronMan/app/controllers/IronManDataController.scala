@@ -2,7 +2,8 @@ package controllers
 
 import javax.inject._
 
-import models.{Workouts, Workout}
+import models.{Workout, Workouts}
+import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -41,9 +42,31 @@ class IronManDataController @Inject() extends Controller {
     val result = scala.io.Source.fromURL(url).mkString
     val iter = result.split("\n").drop(1)
     println("Iterating over lines")
+    val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
     iter.foreach((line: String) => {
       println(line);
-      val workout = Workout(0, 20)
+      val tokens = line.split(",")
+
+      val rawPace = tokens(3);
+
+      val pace = calculateDurationInSeconds(rawPace);
+
+      val rawTime = tokens(2)
+      val time = calculateDurationInSeconds(rawTime);
+      val distance = tokens(1).toDouble;
+      val speed = distance*1000/time; //Because m/s makes more sense than km/s
+      val maxSpeed = (Option(tokens(5)).filterNot(_.isEmpty).getOrElse(0)).toString.toDouble
+
+
+      val workout = Workout(0,
+        formatter.parseDateTime(tokens(0)),
+        distance,
+        time,
+        pace,
+        speed,
+        maxSpeed
+
+      );
       Workouts.add(workout);
 
     })
@@ -51,6 +74,35 @@ class IronManDataController @Inject() extends Controller {
 
 
     Ok(output)
+  }
+
+  private def calculateDurationInSeconds(rawPace: String): Int ={
+    if (rawPace.isEmpty()) {
+      return 0
+    }
+    //It is assumed that the raw pace is always in the range of a couple of minutes
+    val splitComponents = rawPace.split(":");
+    //We reverse the order so that we can deal with the case of a duration in minutes and a duration in hours
+    val reverseOrderedList = splitComponents.reverse.toList;
+
+    def calcTime(lst : List[String], time: Int, iteration: Int): Int = {
+      if (lst.isEmpty) {
+        return time
+      }
+      else {
+        if (iteration > 0) {
+          calcTime(lst.tail, time + lst.head.toString.toInt * scala.math.pow(60.toDouble, iteration.toDouble).toInt , iteration + 1)
+        } else
+        {
+          calcTime(lst.tail, lst.head.toString.toInt, iteration + 1)
+        }
+      }
+    }
+
+
+    val totalSeconds = calcTime(reverseOrderedList, 0, 0)
+    print(totalSeconds);
+    totalSeconds
   }
 
 }

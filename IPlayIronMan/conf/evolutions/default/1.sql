@@ -10,7 +10,8 @@ create table `workout` (
     `time` INT,
     `pace` INT,
     `speed` DOUBLE,
-    `maxSpeed` DOUBLE
+    `maxSpeed` DOUBLE,
+    `type` VARCHAR(20)
 
 )
 

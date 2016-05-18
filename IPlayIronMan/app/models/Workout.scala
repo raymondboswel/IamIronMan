@@ -16,7 +16,7 @@ import scala.concurrent.Future
 
 
 
-case class Workout (id: Long, date:DateTime,distance:Double, time: Int, pace: Int, speed:Double, maxSpeed: Double ){
+case class Workout (id: Long, date:DateTime,distance:Double, time: Int, pace: Int, speed:Double, maxSpeed: Double, workoutType: String ){
 
 }
 
@@ -28,7 +28,7 @@ class WorkoutTableDef(tag:Tag) extends Table[Workout](tag, "workout") {
   def pace = column[Int]("pace")
   def speed = column[Double]("speed")
   def maxSpeed = column[Double]("maxSpeed")
-  //def workoutType = column[String]("type")
+  def workoutType = column[String]("type")
   //def timeOfDay = column[Date]("time_of_day")
   //def elevationGain = column[Int]("elevation_gain")
   //def elevationLoss = column[Int]("elevation_loss")
@@ -36,7 +36,7 @@ class WorkoutTableDef(tag:Tag) extends Table[Workout](tag, "workout") {
   //def averageHeartRate = column[Double]("average_heart_rate")
 
   override def * =
-    (id,date,distance, time, pace, speed, maxSpeed) <> (Workout.tupled, Workout.unapply) /*pace, speed, maxSpeed, workoutType,
+    (id,date,distance, time, pace, speed, maxSpeed, workoutType) <> (Workout.tupled, Workout.unapply) /*pace, speed, maxSpeed, workoutType,
       timeOfDay, elevationGain, elevationLoss, maxHeartRate, averageHeartRate*/
 }
 

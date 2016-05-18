@@ -56,7 +56,7 @@ class IronManDataController @Inject() extends Controller {
       val distance = tokens(1).toDouble;
       val speed = distance*1000/time; //Because m/s makes more sense than km/s
       val maxSpeed = (Option(tokens(5)).filterNot(_.isEmpty).getOrElse(0)).toString.toDouble
-
+      val workoutType = tokens(6)
 
       val workout = Workout(0,
         formatter.parseDateTime(tokens(0)),
@@ -64,8 +64,8 @@ class IronManDataController @Inject() extends Controller {
         time,
         pace,
         speed,
-        maxSpeed
-
+        maxSpeed,
+        workoutType
       );
       Workouts.add(workout);
 

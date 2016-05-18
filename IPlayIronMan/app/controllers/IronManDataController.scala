@@ -8,6 +8,10 @@ import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.sys.process._
+import scala.util.{Failure, Success}
+
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 
 /**
@@ -49,26 +53,43 @@ class IronManDataController @Inject() extends Controller {
 
       val rawPace = tokens(3);
 
-      val pace = calculateDurationInSeconds(rawPace);
+      val pace = calculateDuration(rawPace);
 
       val rawTime = tokens(2)
-      val time = calculateDurationInSeconds(rawTime);
+      val time = calculateDuration(rawTime);
       val distance = tokens(1).toDouble;
-      val speed = distance*1000/time; //Because m/s makes more sense than km/s
+      val speed = distance * 1000 / time;
+      //Because m/s makes more sense than km/s
       val maxSpeed = (Option(tokens(5)).filterNot(_.isEmpty).getOrElse(0)).toString.toDouble
       val workoutType = tokens(6)
-
+      val timeOfDay = calculateDuration(Option(tokens(7)).filterNot(_.isEmpty).getOrElse(0).toString);
+      val elevationGain = calculateDuration(Option(tokens(8)).filterNot(_.isEmpty).getOrElse(0).toString);
+      val elevationLoss = calculateDuration(Option(tokens(9)).filterNot(_.isEmpty).getOrElse(0).toString);
+      val exerciseDate = formatter.parseDateTime(tokens(0))
       val workout = Workout(0,
-        formatter.parseDateTime(tokens(0)),
+        exerciseDate,
         distance,
         time,
         pace,
         speed,
         maxSpeed,
-        workoutType
+        workoutType,
+        timeOfDay,
+        elevationGain,
+        elevationLoss
       );
-      Workouts.add(workout);
 
+        Workouts.exists(exerciseDate, timeOfDay).onComplete( {
+          case Success(exercisesExists) => {
+            println(exercisesExists)
+            if (!exercisesExists) {
+              Workouts.add(workout);
+            } else {
+              print("Exercise exists, skipping")
+            }
+          }
+          case Failure(ex) => print("Exception :o" + ex.getMessage())
+        })
     })
     val output = iter.mkString
 
@@ -76,12 +97,14 @@ class IronManDataController @Inject() extends Controller {
     Ok(output)
   }
 
-  private def calculateDurationInSeconds(rawPace: String): Int ={
-    if (rawPace.isEmpty()) {
+  //This function turns a time, e.g 07:45 into a duration, e.g 445 seconds.
+  //It can also turn a time of day into minutes from midnight 12:00 -> 720 minutes
+  private def calculateDuration(rawTime: String): Int ={
+    if (rawTime.isEmpty()) {
       return 0
     }
     //It is assumed that the raw pace is always in the range of a couple of minutes
-    val splitComponents = rawPace.split(":");
+    val splitComponents = rawTime.split(":");
     //We reverse the order so that we can deal with the case of a duration in minutes and a duration in hours
     val reverseOrderedList = splitComponents.reverse.toList;
 

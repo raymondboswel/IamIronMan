@@ -16,7 +16,7 @@ import scala.concurrent.Future
 
 
 
-case class Workout (id: Long, date:DateTime,distance:Double, time: Int, pace: Int, speed:Double, maxSpeed: Double, workoutType: String ){
+case class Workout (id: Long, date:DateTime,distance:Double, time: Int, pace: Int, speed:Double, maxSpeed: Double, workoutType: String, timeOfDay:Int, elevationGain: Int, elevationLoss: Int ){
 
 }
 
@@ -29,14 +29,14 @@ class WorkoutTableDef(tag:Tag) extends Table[Workout](tag, "workout") {
   def speed = column[Double]("speed")
   def maxSpeed = column[Double]("maxSpeed")
   def workoutType = column[String]("type")
-  //def timeOfDay = column[Date]("time_of_day")
-  //def elevationGain = column[Int]("elevation_gain")
-  //def elevationLoss = column[Int]("elevation_loss")
+  def timeOfDay = column[Int]("time_of_day")
+  def elevationGain = column[Int]("elevation_gain")
+  def elevationLoss = column[Int]("elevation_loss")
   //def maxHeartRate = column[Int]("max_heart_rate")
   //def averageHeartRate = column[Double]("average_heart_rate")
 
   override def * =
-    (id,date,distance, time, pace, speed, maxSpeed, workoutType) <> (Workout.tupled, Workout.unapply) /*pace, speed, maxSpeed, workoutType,
+    (id,date,distance, time, pace, speed, maxSpeed, workoutType, timeOfDay, elevationGain, elevationLoss) <> (Workout.tupled, Workout.unapply) /*pace, speed, maxSpeed, workoutType,
       timeOfDay, elevationGain, elevationLoss, maxHeartRate, averageHeartRate*/
 }
 
@@ -58,6 +58,10 @@ object Workouts {
 
   def get(id: Long): Future[Option[Workout]] = {
     dbConfig.db.run(workouts.filter(_.id === id).result.headOption)
+  }
+
+  def exists(date: DateTime, timeOfDay: Int) : Future[Boolean] = {
+    dbConfig.db.run(workouts.filter(x => (x.date === date && x.timeOfDay === timeOfDay) ).exists.result);
   }
 
   def listAll: Future[Seq[Workout]] = {

@@ -11,8 +11,10 @@ create table `workout` (
     `pace` INT,
     `speed` DOUBLE,
     `maxSpeed` DOUBLE,
-    `type` VARCHAR(20)
-
+    `type` VARCHAR(20),
+    `time_of_day` INT,
+    `elevation_gain` INT,
+    `elevation_loss` INT
 )
 
 # --- !Downs
